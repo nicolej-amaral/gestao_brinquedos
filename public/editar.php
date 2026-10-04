@@ -8,7 +8,7 @@ $sql = "SELECT * FROM brinquedos WHERE id = $id";
 
 $resultado = mysqli_query($conexao, $sql);
 
-$prato = mysqli_fetch_assoc($resultado);
+$brinquedos = mysqli_fetch_assoc($resultado);
 
 ?>
 
