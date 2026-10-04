@@ -1,292 +1,47 @@
-<?php
-
-include "infra/conexao.php";
-
-$brinquedos = mysqli_query($conexao, "SELECT * FROM brinquedos");
-
-$resultadoPesquisa = null;
-
-if (isset($_GET["pesquisa"]) && $_GET["pesquisa"] != "") {
-
-    $pesquisa = $_GET["pesquisa"];
-
-    $sql = "SELECT usuarios.nome AS usuario,
-                   pratos.id,
-                   pratos.nome AS prato,
-                   pratos.descricao,
-                   pratos.preco
-            FROM usuarios
-            INNER JOIN pratos
-            ON usuarios.id = pratos.usuario_id
-            WHERE usuarios.nome LIKE '%$pesquisa%'";
-
-    $resultadoPesquisa = mysqli_query($conexao, $sql);
-}
-
-
-$sqlPratos = "SELECT * FROM pratos";
-
-$pratos = mysqli_query($conexao, $sqlPratos);
-
-?>
-
+<?php include "infra/conexao.php"; ?>
 <!DOCTYPE html>
-
-<html class="html1" lang="pt-br">
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de brinquedos</title>
+    <link rel="stylesheet" href="style/styles.css">
+</head>
 <body>
-<div class="container1">
-<h2>Cadastrar usuário</h2>
-<link rel="stylesheet" href="style/style.css">
-<form action="public/cadastro_usu.php" method="POST">
+<header>
+    <h1>Gestão de brinquedos</h1>
+</header>
 
-    <label>Nome:</label>
+<main>
+    <h2>Adicione um novo brinquedo!</h2>
 
-    <input
-        type="text"
-        name="nome"
-        required
-    >
+    <form action="public/cadastrar_brinquedo.php" method="POST">
+        <label for="nome">Nome do brinquedo:</label>
+        <input type="text" id="nome" name="nome" required>
+        <br>
 
-    <br><br>
+        <label for="faixa">Faixa etária:</label>
+        <input type="text" id="faixaEtaria" name="faixaEtaria" required>
+        <br>
 
-    <label>Email:</label>
+        <label for="categoria">Categoria:</label>
+        <input type="text" id="categoria" name="categoria" required>
+        <br>
 
-    <input
-        type="email"
-        name="email"
-        required
-    >
+        <label for="preco">Preço:</label>
+        <input type="number" step="0.01" min="0" id="preco" name="preco" required>
+        <br>
 
-    <br><br>
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" step="1" min="0" id="quantidade" name="quantidade" required>
+        <br>
 
-    <button div= "botao" type="submit">
-        Cadastrar usuário
-    </button>
+        <button type="submit">Cadastrar brinquedo</button>
+    </form>
 
-</form>
-</div>
+    <p><a href="public/listar.php">Ver brinquedos cadastrados</a></p>
+</main>
 
-
-
-<hr>
-
-
-<div class="container2">
-<h2>Cadastrar prato</h2>
-
-<form action="public/cadastrar.php" method="POST">
-
-    <label>Nome do prato:</label>
-
-    <input
-        type="text"
-        name="titulo"
-        required
-    >
-
-    <br><br>
-
-
-    <label>Descrição:</label>
-
-    <input
-        type="text"
-        name="autor"
-        required
-    >
-
-    <br><br>
-
-
-    <label>Preço:</label>
-
-    <input
-        type="number"
-        name="ano"
-        step="0.01"
-        required
-    >
-
-    <br><br>
-
-
-    <label>Usuário:</label>
-
-    <select name="usuario_id" required>
-
-        <option value="">
-            Selecione o usuário
-        </option>
-
-        <?php while ($usuario = mysqli_fetch_assoc($usuarios)) { ?>
-
-            <option value="<?php echo $usuario["id"]; ?>">
-
-                <?php echo $usuario["nome"]; ?>
-
-            </option>
-
-        <?php } ?>
-
-    </select>
-
-    <br><br>
-
-    <button div= "botao" type="submit">
-        Cadastrar prato
-    </button>
-
-</form>
-</div>
-
-
-
-
-<hr>
-
-
-<div class="container3">
-<h2>Pesquisar pratos por usuário</h2>
-
-<form method="GET">
-
-    <input
-        type="text"
-        name="pesquisa"
-        placeholder="Digite o nome do usuário"
-        required
-    >
-
-    <button div= "botao" type="submit">
-        Pesquisar
-    </button>
-
-</form>
-
-
-<?php if ($resultadoPesquisa != null) { ?>
-
-    <h2>Pratos encontrados</h2>
-
-    <table border="1" cellpadding="10">
-
-        <tr>
-
-            <th>Usuário</th>
-            <th>Prato</th>
-            <th>Descrição</th>
-            <th>Preço</th>
-            <th>Ações</th>
-
-        </tr>
-
-
-        <?php while ($prato = mysqli_fetch_assoc($resultadoPesquisa)) { ?>
-
-            <tr>
-
-                <td>
-                    <?php echo $prato["usuario"]; ?>
-                </td>
-
-                <td>
-                    <?php echo $prato["prato"]; ?>
-                </td>
-
-                <td>
-                    <?php echo $prato["descricao"]; ?>
-                </td>
-
-                <td>
-                    R$ <?php echo $prato["preco"]; ?>
-                </td>
-
-                <td>
-
-                    <a href="public/editar.php?id=<?php echo $prato["id"]; ?>">
-                        Editar
-                    </a>
-
-                    |
-
-                    <a
-                        href="public/excluir.php?id=<?php echo $prato["id"]; ?>"
-                        onclick="return confirm('Deseja excluir este prato?')"
-                    >
-                        Excluir
-                    </a>
-
-                </td>
-
-            </tr>
-
-        <?php } ?>
-
-    </table>
-
-<?php } ?>
-</div>
-
-<hr>
-<div class="container4">
-<h2 class="titulo">Todos os pratos</h2>
-
-<table class="table" border="1" cellpadding="10">
-
-    <tr>
-
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Descrição</th>
-        <th>Preço</th>
-        <th>Ações</th>
-
-    </tr>
-
-
-    <?php while ($prato = mysqli_fetch_assoc($pratos)) { ?>
-
-        <tr>
-
-            <td>
-                <?php echo $prato["id"]; ?>
-            </td>
-
-            <td>
-                <?php echo $prato["nome"]; ?>
-            </td>
-
-            <td>
-                <?php echo $prato["descricao"]; ?>
-            </td>
-
-            <td>
-                R$ <?php echo $prato["preco"]; ?>
-            </td>
-
-            <td>
-
-                <a href="public/editar.php?id=<?php echo $prato["id"]; ?>">
-                    Editar
-                </a>
-
-                |
-
-                <a
-                    href="public/excluir.php?id=<?php echo $prato["id"]; ?>"
-                    onclick="return confirm('Deseja excluir este prato?')"
-                >
-                    Excluir
-                </a>
-
-            </td>
-
-        </tr>
-
-    <?php } ?>
-
-</table>
-</div>
+<footer></footer>
 </body>
-
 </html>
